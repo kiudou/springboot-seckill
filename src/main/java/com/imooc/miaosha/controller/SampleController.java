@@ -28,4 +28,13 @@ public class SampleController {
         User user = userService.getById(1);
         return user.getName();
     }
+
+
+    @RequestMapping("/redis/get")
+    @ResponseBody
+    public String redisGet(){
+        Integer l = userService.get("key1",Integer.class);
+        return l.toString();
+    }
+
 }

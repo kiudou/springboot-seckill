@@ -21,8 +21,7 @@ public class UserService {
     @Resource
     JedisPool jedisPool;
 
-    @Resource
-    RedisConfig redisConfig;
+
 
     public User getById(int id){
         return userDao.getById(id);
@@ -34,14 +33,13 @@ public class UserService {
         try{
             jedis = jedisPool.getResource();
             String str =  jedis.get(key);
-            T t = stringToBean(str);
+            T t = stringToBean(str, clazz);
             return t;
         }finally {
             if(jedis != null) {
                 jedis.close();
             }
         }
-
     }
 
 
@@ -50,7 +48,7 @@ public class UserService {
         try{
             jedis = jedisPool.getResource();
             String str = beanToString(value);
-            if(str == null) {
+            if(str == null || str.length() <= 0) {
                 return false;
             }
             jedis.set(key, str);
@@ -62,20 +60,22 @@ public class UserService {
         }
     }
 
-    @Bean   //通过这种方式将JedisPool注入到Spring容器中
-    public JedisPool jedisPoolFactory(){
-        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxIdle(redisConfig.getMaxIdle());
-        jedisPoolConfig.setMaxTotal(redisConfig.getMaxActive());
-        jedisPoolConfig.setMaxWaitMillis(redisConfig.getMaxWait()*1000);
-        JedisPool jedisPool = new JedisPool(jedisPoolConfig, redisConfig.getHost(), redisConfig.getPort(), redisConfig.getTimeout()*1000,redisConfig.getPassword(),0);
-        return jedisPool;
-    }
 
 
-    private <T> T stringToBean(String str) {
 
-        return null;
+    private <T> T stringToBean(String str, Class<T> clazz) {
+        if(str == null || str.length() <=0 || clazz == null) {
+            return null;
+        }
+        if(clazz == int.class || clazz == Integer.class) {
+            return (T)Integer.valueOf(str);
+        }else if(clazz == long.class || clazz == Long.class){
+            return (T)Long.valueOf(str);
+        }else if(clazz == String.class){
+            return (T)str;
+        }else{
+            return JSON.toJavaObject(JSON.parseObject(str),clazz);
+        }
     }
 
 

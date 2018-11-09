@@ -1,18 +1,29 @@
 package com.imooc.miaosha.redis;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component //表示组件
-@ConfigurationProperties(prefix = "spring.redis") //spring读取配置
+//@ConfigurationProperties(prefix = "spring.redis") //spring读取配置
+//@PropertySource(value = "classpath:application.properties")
 public class RedisConfig {
+
+    @Value("${spring.redis.host}")
     private String host;
+    @Value("${spring.redis.port}")
     private int port;
+    @Value("${spring.redis.timeout}")
     private int timeout;
+    @Value("${spring.redis.password}")
     private String password;
+    @Value("${spring.redis.jedis.pool.max-active}")
     private int maxActive;
+    @Value("${spring.redis.jedis.pool.max-idle}")
     private int maxIdle;
+    @Value("${spring.redis.jedis.pool.max-wait}")
     private int maxWait;
 
     public String getHost() {
