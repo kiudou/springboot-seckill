@@ -1,12 +1,11 @@
 package com.imooc.miaosha.controller;
-
 import com.imooc.miaosha.domain.User;
+import com.imooc.miaosha.redis.UserKey;
 import com.imooc.miaosha.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.annotation.Resource;
 
 @Controller
@@ -33,8 +32,16 @@ public class SampleController {
     @RequestMapping("/redis/get")
     @ResponseBody
     public String redisGet(){
-        Integer l = userService.get("key1",Integer.class);
-        return l.toString();
+        User user = userService.get(UserKey.getById,""+1,User.class);
+        return user.toString();
+    }
+
+    @RequestMapping("/redis/set")
+    @ResponseBody
+    public boolean redisSet(){
+        User user = new User(1,"1111");
+        userService.set(UserKey.getById,""+1,user); //UserKey:id1
+        return true;
     }
 
 }
