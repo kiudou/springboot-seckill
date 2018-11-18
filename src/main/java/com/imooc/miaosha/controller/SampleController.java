@@ -1,4 +1,5 @@
 package com.imooc.miaosha.controller;
+import com.imooc.miaosha.domain.Result;
 import com.imooc.miaosha.domain.User;
 import com.imooc.miaosha.redis.UserKey;
 import com.imooc.miaosha.service.UserService;
@@ -33,7 +34,8 @@ public class SampleController {
     @ResponseBody
     public String redisGet(){
         User user = userService.get(UserKey.getById,""+1,User.class);
-        return user.toString();
+        Result<User> result = new Result<>(user);
+        return result.toString();
     }
 
     @RequestMapping("/redis/set")
