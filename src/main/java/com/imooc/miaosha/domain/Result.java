@@ -70,4 +70,6 @@ public class Result<T> implements Serializable {
                 ", success=" + success +
                 '}';
     }
+
+
 }
