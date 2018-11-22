@@ -8,6 +8,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper //mybatis的注解
 public interface UserDao {
 
-    @Select("select * from user where id = #{id}") //通过Param,{}里就可以引用
+    @Select("select * from miaosha_user where id = #{id}") //通过Param,{}里就可以引用
     public User getById(@Param("id")int id);
 }

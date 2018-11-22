@@ -34,7 +34,7 @@ public class SampleController {
     @ResponseBody
     public String redisGet(){
         User user = userService.get(UserKey.getById,""+1,User.class);
-        Result<User> result = new Result<>(user);
+        Result result = new Result(user);
         return result.toString();
     }
 

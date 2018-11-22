@@ -2,73 +2,65 @@ package com.imooc.miaosha.domain;
 
 import java.io.Serializable;
 
-public class Result<T> implements Serializable {
+public class Result implements Serializable {
     private static final long serialVersionUID = 1L;
-    /**
-     * 数据
-     */
-    private T data;
-    /**
-     * 信息
-     */
-    private String message;
-    /**
-     * 是否成功
-     */
-    private boolean success;
+    private Boolean success;
+    private Object msg;
+    private Integer code = 0;
 
-    public Object getData() {
-        return data;
+    public Result(Boolean success, Object msg) {
+        if(msg.getClass() == CodeMsg.class) {
+            CodeMsg codeMsg = (CodeMsg) msg;
+            this.code = codeMsg.getCode();
+            this.msg = codeMsg.getMsg();
+        } else {
+            this.msg = msg;
+        }
+        this.success = success;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public Result(Object msg) {
+        if(msg.getClass() == CodeMsg.class) {
+            CodeMsg codeMsg = (CodeMsg) msg;
+            this.code = codeMsg.getCode();
+            this.msg = codeMsg.getMsg();
+        } else {
+            this.msg = msg;
+        }
+        this.success = true;
+    }
+    public Result() {}
+
+    public Integer getCode() {
+        return code;
     }
 
-    public String getMessage() {
-        return message;
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public boolean isSuccess() {
+    public Boolean getSuccess() {
         return success;
     }
 
-    public void setSuccess(boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
-    public Result() {
-        super();
+    public Object getMsg() {
+        return msg;
     }
 
-    public Result(T data, String message, boolean success) {
-        this.data = data;
-        this.message = message;
-        this.success = success;
+    public void setMsg(Object msg) {
+        this.msg = msg;
     }
 
-    public Result(T data, String message) {
-        this.data = data;
-        this.message = message;
-        this.success = true;
+    public static Result buildError(Object errorMsg){
+        return new Result(false, errorMsg);
     }
 
-    public Result(T data) {
-        this.data = data;
-        this.success = true;
-    }
-
-    @Override
-    public String toString() {
-        return "Result{" +
-                "data=" + data +
-                ", message='" + message + '\'' +
-                ", success=" + success +
-                '}';
+    public static Result buildSuccess(Object msg){
+        return new Result(true, msg);
     }
 
 
