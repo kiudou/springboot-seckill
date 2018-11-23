@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/login")
@@ -31,19 +32,7 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result doLogin(LoginVo loginVo) {
-        logger.info(loginVo.toString());
-        String mobile = loginVo.getMobile();
-        String password = loginVo.getPassword();
-        if (StringUtils.isEmpty(mobile)) {
-            return Result.buildError(CodeMsg.MOBILE_EMPTY);
-        }
-        if (StringUtils.isEmpty(password)) {
-            return Result.buildError(CodeMsg.PASSWORD_EMPTY);
-        }
-        if (!ValidatorUtil.isMobile(mobile)) {
-            return Result.buildError(CodeMsg.MOBILE_ERROR);
-        }
+    public Result doLogin(@Valid LoginVo loginVo) { //@Valid进行参数校验
         CodeMsg cm = miaoshaUserService.login(loginVo);
         if (cm.getCode() == 0) {
             return Result.buildSuccess(CodeMsg.SUCCESS);
