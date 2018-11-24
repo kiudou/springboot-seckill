@@ -4,13 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.imooc.miaosha.dao.UserDao;
 import com.imooc.miaosha.domain.User;
 import com.imooc.miaosha.redis.KeyPrefix;
-import com.imooc.miaosha.redis.RedisConfig;
-import com.imooc.miaosha.redis.UserKey;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.Resource;
 
@@ -22,7 +18,6 @@ public class UserService {
 
     @Resource
     JedisPool jedisPool;
-
 
 
     public User getById(int id){

@@ -18,6 +18,7 @@ public class GlobleExceptionHandler { //定义全局异常处理类
 
     @ExceptionHandler(value = Exception.class)
     public Result exceptionHandler(HttpServletRequest request, Exception e) { //处理所有 Controller 层抛出的 Exception 及其子类的异常
+        e.printStackTrace();
         if (e instanceof BindException) {
             BindException ex = (BindException)e;
             List<ObjectError> errors = ex.getAllErrors();
