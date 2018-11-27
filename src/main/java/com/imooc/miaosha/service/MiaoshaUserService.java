@@ -7,6 +7,7 @@ import com.imooc.miaosha.redis.MiaoshaUserKey;
 import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.util.MD5Util;
 import com.imooc.miaosha.util.UUIDUtil;
+import com.imooc.miaosha.vo.GoodsVo;
 import com.imooc.miaosha.vo.LoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Service
 public class MiaoshaUserService {
@@ -40,6 +42,7 @@ public class MiaoshaUserService {
         }
         return user;
     }
+
 
     public CodeMsg login(HttpServletResponse response, LoginVo loginVo) {
         if (loginVo == null) {
