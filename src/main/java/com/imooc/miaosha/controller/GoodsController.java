@@ -75,9 +75,18 @@ public class GoodsController {
         return html;
     }
 
-    @RequestMapping("/to_detail/{goodsId}")
-    public String toDetail(Model model, MiaoshaUser user, @PathVariable("goodsId")long goodsId) {
+    @RequestMapping(value = "/to_detail/{goodsId}", produces = "text/html")
+    @ResponseBody
+    public String toDetail(HttpServletRequest request, HttpServletResponse response,Model model, MiaoshaUser user, @PathVariable("goodsId")long goodsId) {
         model.addAttribute("user", user);
+
+        //url缓存，用于短时间并发量高的情况，url缓存和页面缓存区别不大，只是url缓存有一个请求值
+        //取缓存
+        String html = redisService.get(GoodsKey.getGoodsDetail,""+goodsId,String.class);
+        if(!StringUtils.isEmpty(html)) {
+            return html;
+        }
+
 
         GoodsVo goods =  goodsService.getGoodsVoByGoodsId(goodsId);
         model.addAttribute("goods", goods);
@@ -101,7 +110,15 @@ public class GoodsController {
         model.addAttribute("miaoshaStatus", miaoshaStatus);
         model.addAttribute("remainSeconds", remainSeconds);
 
-        return "goods_detail";
+        //手动渲染
+        WebContext context = new WebContext(request, response, request.getServletContext(),request.getLocale(), model.asMap());
+        html = thymeleafViewResolver.getTemplateEngine().process("goods_detail", context);
+        if(!StringUtils.isEmpty(html)) {
+            redisService.set(GoodsKey.getGoodsDetail, ""+goodsId, html);
+        }
+        return html;
+
+//        return "goods_detail";
     }
 
 }
