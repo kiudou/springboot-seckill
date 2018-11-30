@@ -8,6 +8,7 @@ import com.imooc.miaosha.redis.GoodsKey;
 import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.service.GoodsService;
 import com.imooc.miaosha.service.MiaoshaUserService;
+import com.imooc.miaosha.vo.GoodsDetailVo;
 import com.imooc.miaosha.vo.GoodsVo;
 import com.imooc.miaosha.vo.LoginVo;
 import org.apache.commons.lang3.StringUtils;
@@ -121,4 +122,31 @@ public class GoodsController {
 //        return "goods_detail";
     }
 
+    @RequestMapping(value = "/detail/{goodsId}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result detail(MiaoshaUser user, @PathVariable("goodsId")long goodsId) {
+        GoodsVo goods =  goodsService.getGoodsVoByGoodsId(goodsId);
+        //判断秒杀时间
+        long startAt = goods.getStartDate().getTime();
+        long endAt = goods.getEndDate().getTime();
+        long now = System.currentTimeMillis();
+        int miaoshaStatus = 0; // 活动状态
+        int remainSeconds = 0; //剩余时间
+        if(now < startAt) { //秒杀未开始，倒计时
+            miaoshaStatus = 0;
+            remainSeconds = (int) ((startAt - now)/1000);
+        }else if (now > endAt) { //秒杀已经结束
+            miaoshaStatus = 2;
+            remainSeconds = -1;
+        }else { //秒杀进行中
+            miaoshaStatus = 1;
+            remainSeconds = 0;
+        }
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoods(goods);
+        vo.setMiaoshaStatus(miaoshaStatus);
+        vo.setUser(user);
+        vo.setRemainSeconds(remainSeconds);
+        return Result.buildSuccess(vo);
+    }
 }

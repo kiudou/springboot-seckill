@@ -168,7 +168,22 @@ public class RedisService {
         }else{
             return JSON.toJSONString(value);
         }
-
     }
+
+    public boolean delete(KeyPrefix keyPrefix, String key) {
+        Jedis jedis = null;
+        try{
+            jedis = jedisPool.getResource();
+            //生成真正的key
+            String realKey = keyPrefix.getPrefix() + key;
+            long cnt = jedis.del(realKey);
+            return cnt > 0;
+        }finally {
+            if(jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
 
 }

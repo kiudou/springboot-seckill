@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+    <head>
+        <title>商品列表</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <script type="text/javascript" src="/js/common.js"></script>
+        <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+        <script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
+        <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+        <script src="https://cdn.bootcss.com/jquery-validate/1.18.0/jquery.validate.js"></script>
+        <link href="https://cdn.bootcss.com/layer/2.3/skin/layer.css" rel="stylesheet">
+        <link href="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet">
+    </head>
+
+    <body>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">秒杀商品详情</div>
+            <div class="panel-body">
+                <span id="userTip">您还没有登陆，请登录后在操作<br/></span>
+                <span>没有收货地址的提示...</span>
+            </div>
+            <table class="table" id="goodslist">
+                <tr>
+                    <td>商品名称</td>
+                    <td colspan="3" id="goodsName"></td>
+                </tr>
+                <tr>
+                    <td>商品图片</td>
+                    <td colspan="3"><img id="goodsImg" width="200" height="200"/></td>
+                </tr>
+                <tr>
+                    <td>秒杀开始时间</td>
+                    <td id="startTime"></td>
+                    <td>
+                        <input type="hidden" id="remainSeconds"/>
+                        <span id="miaoshaTip"></span>
+                    </td>
+                    <td>
+                        <form id="miaoshaForm" method="post" action="/miaosha/do_miaosha">
+                            <button class="btn btn-primary btn-block" type="submit" id="buyButton">立即秒杀</button>
+                            <input type="hidden" name="goodsId" id="goodsId"/>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品原价</td>
+                    <td colspan="3" id="goodsPrice"></td>
+                </tr>
+                <tr>
+                    <td>秒杀价</td>
+                    <td colspan="3" id="miaoshaPrice"></td>
+                </tr>
+                <tr>
+                    <td>库存数量</td>
+                    <td colspan="3" id="stockCount"></td>
+                </tr>
+            </table>
+        </div>
+
+    </body>
+
+<script>
+    $(function(){
+        // countDown();
+        getDetail();
+    });
+    function getDetail() {
+        var goodsId = g_getQueryString("goodsId");
+        $.ajax({
+            url: "/goods/detail/"+goodsId,
+            type: "GET",
+            success: function (data) {
+                if(data.code == 0) { //成功
+                    render(data.msg);
+                } else { //失败
+
+                }
+            },
+            error: function () {
+                alert("客户端请求有误");
+            }
+        });
+    }
+
+    function render(detail) {
+        var miaoshaStatus = detail.miaoshaStatus;
+        var remainSeconds = detail.remainSeconds;
+        var goods = detail.goods;
+        var user = detail.user;
+        if(user) {
+            $("#userTip").hide();
+        }
+        $("#goodsName").text(goods.goodsName);
+        $("#goodsImg").attr("src",goods.goodsImg);
+        $("#startTime").text(new Date(goods.startDate).format("yyyy-MM-dd hh:mm:ss"));
+        $("#remainSeconds").val(remainSeconds);
+        $("#goodsId").val(goods.id)
+        $("#goodsPrice").text(goods.goodsPrice);
+        $("#miaoshaPrice").text(goods.miaoshaPrice);
+        $("#stockCount").text(goods.stockCount);
+        countDown();
+    }
+
+
+
+    function countDown() {
+        var remainSeconds = $('#remainSeconds').val();
+        var timeout;
+        if(remainSeconds > 0) { //秒杀还没开始，倒计时
+            $('#buyButton').attr("disabled",true);
+            $("#miaoshaTip").html("秒杀倒计时："+remainSeconds+"秒");
+            timeout = setTimeout(function () {
+                $('#countDown').text(remainSeconds - 1);
+                $('#remainSeconds').val(remainSeconds - 1);
+                countDown();
+            },1000);
+        } else if (remainSeconds == 0){ //秒杀进行中
+            $('#buyButton').attr("disabled",false);
+            if(timeout) {
+                clearTimeout(timeout);
+            }
+            $('#miaoshaTip').html("秒杀进行中");
+        } else { //秒杀结束
+            $('#buyButton').attr("disabled",true);
+            $('#miaoshaTip').html("秒杀结束");
+        }
+    }
+</script>
+
+</html>

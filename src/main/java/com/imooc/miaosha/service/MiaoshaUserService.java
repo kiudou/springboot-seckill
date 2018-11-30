@@ -3,11 +3,11 @@ package com.imooc.miaosha.service;
 import com.imooc.miaosha.dao.MiaoshaUserDao;
 import com.imooc.miaosha.domain.CodeMsg;
 import com.imooc.miaosha.domain.MiaoshaUser;
+import com.imooc.miaosha.exception.GlobalExceptionHandler;
 import com.imooc.miaosha.redis.MiaoshaUserKey;
 import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.util.MD5Util;
 import com.imooc.miaosha.util.UUIDUtil;
-import com.imooc.miaosha.vo.GoodsVo;
 import com.imooc.miaosha.vo.LoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @Service
 public class MiaoshaUserService {
@@ -29,7 +28,38 @@ public class MiaoshaUserService {
     RedisService redisService;
 
     public MiaoshaUser getById(long id) {
-        return miaoshaUserDao.getById(id);
+        //取缓存
+        MiaoshaUser miaoshaUser = redisService.get(MiaoshaUserKey.getById,""+id,MiaoshaUser.class);
+        if (miaoshaUser != null) {
+            return miaoshaUser;
+        }
+
+        miaoshaUser = miaoshaUserDao.getById(id);
+        if (miaoshaUser != null) {
+            redisService.set(MiaoshaUserKey.getById,""+id, miaoshaUser);
+        }
+        return miaoshaUser;
+    }
+
+    //对象缓存
+    public boolean updatePassword(String token, long id, String formpass) {
+        //取user
+        MiaoshaUser miaoshaUser = getById(id);
+        if(miaoshaUser == null) {
+//            throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+            return false;
+        }
+
+        //更新数据库
+        MiaoshaUser toBeUpdate = new MiaoshaUser();
+        toBeUpdate.setId(id);
+        toBeUpdate.setPassword(MD5Util.formPassToDBPass(formpass,miaoshaUser.getSalt()));
+        miaoshaUserDao.update(toBeUpdate);
+        //处理缓存
+        redisService.delete(MiaoshaUserKey.getById,""+id);
+        miaoshaUser.setPassword(toBeUpdate.getPassword());
+        redisService.set(MiaoshaUserKey.token,token,miaoshaUser);
+        return true;
     }
 
     public MiaoshaUser getByToken(HttpServletResponse response, String token) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 @ControllerAdvice
 @ResponseBody
-public class GlobleExceptionHandler { //定义全局异常处理类
+public class GlobalExceptionHandler { //定义全局异常处理类
 
     @ExceptionHandler(value = Exception.class)
     public Result exceptionHandler(HttpServletRequest request, Exception e) { //处理所有 Controller 层抛出的 Exception 及其子类的异常
