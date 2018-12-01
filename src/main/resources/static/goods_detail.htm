@@ -37,10 +37,12 @@
                         <span id="miaoshaTip"></span>
                     </td>
                     <td>
-                        <form id="miaoshaForm" method="post" action="/miaosha/do_miaosha">
-                            <button class="btn btn-primary btn-block" type="submit" id="buyButton">立即秒杀</button>
-                            <input type="hidden" name="goodsId" id="goodsId"/>
-                        </form>
+                        <!--<form id="miaoshaForm" method="post" action="/miaosha/do_miaosha">-->
+                            <!--<button class="btn btn-primary btn-block" type="submit" id="buyButton">立即秒杀</button>-->
+                            <!--<input type="hidden" name="goodsId" id="goodsId"/>-->
+                        <!--</form>-->
+                        <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="doMiaosha()">立即秒杀</button>
+                        <input type="hidden" name="goodsId" id="goodsId"/>
                     </td>
                 </tr>
                 <tr>
@@ -65,6 +67,8 @@
         // countDown();
         getDetail();
     });
+
+
     function getDetail() {
         var goodsId = g_getQueryString("goodsId");
         $.ajax({
@@ -74,7 +78,7 @@
                 if(data.code == 0) { //成功
                     render(data.msg);
                 } else { //失败
-
+                    alert(data.msg);
                 }
             },
             error: function () {
@@ -126,6 +130,28 @@
             $('#miaoshaTip').html("秒杀结束");
         }
     }
+
+    function doMiaosha() {
+        $.ajax({
+           url: "/miaosha/do_miaosha",
+           type: "POST",
+           data: {
+               goodsId: $("#goodsId").val()
+           },
+            success: function (data) {
+                if(data.code == 0) { //成功
+                    window.location.href="/order_detail.htm?orderId="+data.msg.id;
+                } else { //失败
+                    alert(data.msg);
+                }
+            },
+            error: function () {
+                alert("客户端请求有误");
+            }
+        });
+    }
+
+
 </script>
 
 </html>

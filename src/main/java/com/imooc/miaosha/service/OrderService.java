@@ -23,6 +23,11 @@ public class OrderService {
         return orderDao.getMiaoshaOrderByUserIdGoodsId(userId, goodsId);
     }
 
+    public OrderInfo getOrderById(long orderId) {
+        return orderDao.getOrderById(orderId);
+    }
+
+
     @Transactional
     public OrderInfo createOrder(MiaoshaUser user, GoodsVo goods){
         OrderInfo orderInfo = new OrderInfo();
@@ -43,5 +48,6 @@ public class OrderService {
         orderDao.insertMiaoshaOrder(miaoshaOrder);
         return orderInfo;
     }
+
 
 }
