@@ -1,6 +1,7 @@
 package com.imooc.miaosha.controller;
 import com.imooc.miaosha.domain.Result;
 import com.imooc.miaosha.domain.User;
+import com.imooc.miaosha.rabbitmq.MQSender;
 import com.imooc.miaosha.redis.UserKey;
 import com.imooc.miaosha.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -16,10 +17,20 @@ public class SampleController {
     @Resource
     UserService userService;
 
+    @Resource
+    MQSender mqSender;
+
     @RequestMapping("/thymeleaf")
     public String thymeleaf(Model model){
         model.addAttribute("name","kiudou");
         return "hello";
+    }
+
+    @RequestMapping("/mq")
+    @ResponseBody
+    public Result mqGet(){
+        mqSender.send("hello world");
+        return Result.buildSuccess("it's success");
     }
 
     @RequestMapping("/db")
