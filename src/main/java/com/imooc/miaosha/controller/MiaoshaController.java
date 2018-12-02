@@ -38,6 +38,7 @@ public class MiaoshaController {
             return Result.buildError(CodeMsg.SESSION_ERROR);
         }
 
+
         //判断库存
         GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
         int stock = goods.getStockCount();

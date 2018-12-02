@@ -82,15 +82,12 @@ function doLogin() {
 		success: function (data) {
 			layer.closeAll();
 			if(data.code == 0) {
-			    alert("登陆成功");
+                layer.msg("登陆成功");
 			    window.location.href = "/goods/to_list";
-			    // layer.msg("成功");
+
 			} else {
-			    alert(data.msg);
-			    // layer.msg(data.msg);
+			    layer.msg(data.msg);
 			}
-            console.log(data);
-            // alert(data.msg);
         },
 		error: function () {
             layer.closeAll();

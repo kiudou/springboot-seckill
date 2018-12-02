@@ -78,11 +78,13 @@
                 if(data.code == 0) { //成功
                     render(data.msg);
                 } else { //失败
-                    alert(data.msg);
+                    layer.msg(data.msg);
+                    // alert(data.msg);
                 }
             },
             error: function () {
-                alert("客户端请求有误");
+                layer.msg("客户端请求有误");
+                // alert("客户端请求有误");
             }
         });
     }
