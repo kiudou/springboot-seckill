@@ -142,15 +142,55 @@
            },
             success: function (data) {
                 if(data.code == 0) { //成功
-                    window.location.href="/order_detail.htm?orderId="+data.msg.id;
+
+                    getMiaoshaResult($("#goodsId").val());
                 } else { //失败
-                    alert(data.msg);
+                    layer.msg(data.msg);
+                    // alert(data.msg);
                 }
             },
             error: function () {
-                alert("客户端请求有误");
+               layer.msg("客户端请求有误");
+                // alert("客户端请求有误");
             }
         });
+    }
+
+    function getMiaoshaResult(goodsId) {
+        g_showLoading();
+        $.ajax({
+            url: "/miaosha/result",
+            type: "GET",
+            data: {
+                goodsId: $("#goodsId").val()
+            },
+            success: function (data) {
+                if(data.code == 0) { //成功
+                    var result = data.msg;
+                    if(result < 0) {
+                        layer.msg("对不起，秒杀失败");
+                    } else if(result == 0) { //继续轮询
+                        setTimeout(function () {
+                            getMiaoshaResult(goodsId);
+                        },50);
+                    } else {
+                        layer.confirm("恭喜你，秒杀成功!查看订单？",{btn:["确定","取消"]},
+                            function () {
+                                window.location.href="/order_detail.htm?orderId="+result;
+                            },
+                            function () {
+                                layer.closeAll();
+                            });
+                    }
+                } else { //失败
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+
     }
 
 
