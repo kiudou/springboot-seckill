@@ -1,5 +1,6 @@
 package com.imooc.miaosha.controller;
 
+import com.imooc.miaosha.access.AccessLimit;
 import com.imooc.miaosha.domain.*;
 import com.imooc.miaosha.rabbitmq.MQSender;
 import com.imooc.miaosha.rabbitmq.MiaoshaMessage;
@@ -153,6 +154,7 @@ public class MiaoshaController implements InitializingBean {
      * @param goodsId
      * @return
      */
+    @AccessLimit(seconds=5, maxCount=5, needLogin=true)
     @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
     public Result getMiaoshaPath(MiaoshaUser user, @RequestParam("goodsId")long goodsId, @RequestParam("verifyCode")int verifyCode) {
