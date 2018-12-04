@@ -34,6 +34,9 @@ public class CodeMsg implements Serializable {
     //秒杀模块 5005xx
     public static CodeMsg MIAO_SHA_OVER = new CodeMsg(500500, "商品已经秒杀完毕");
     public static CodeMsg REPEATE_MIAOSHA = new CodeMsg(500501, "商品重复秒杀");
+    public static CodeMsg MIAOSHA_FAIL = new CodeMsg(500502, "秒杀失败");
+
+
 
     public int getCode() {
         return code;
