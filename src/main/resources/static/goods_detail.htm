@@ -41,7 +41,7 @@
                             <!--<button class="btn btn-primary btn-block" type="submit" id="buyButton">立即秒杀</button>-->
                             <!--<input type="hidden" name="goodsId" id="goodsId"/>-->
                         <!--</form>-->
-                        <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="doMiaosha()">立即秒杀</button>
+                        <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="getMiaoshaPath()">立即秒杀</button>
                         <input type="hidden" name="goodsId" id="goodsId"/>
                     </td>
                 </tr>
@@ -133,16 +133,39 @@
         }
     }
 
-    function doMiaosha() {
+    function getMiaoshaPath() {
         $.ajax({
-           url: "/miaosha/do_miaosha",
+            url: "/miaosha/path",
+            type: "GET",
+            data: {
+                goodsId: $("#goodsId").val()
+            },
+            success: function (data) {
+                if(data.code == 0) { //成功
+                    var path = data.msg;
+                    doMiaosha(path);
+                } else { //失败
+                    layer.msg(data.msg);
+                    // alert(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+                // alert("客户端请求有误");
+            }
+        });
+    }
+
+
+    function doMiaosha(path) {
+        $.ajax({
+           url: "/miaosha/"+path+"/do_miaosha",
            type: "POST",
            data: {
                goodsId: $("#goodsId").val()
            },
             success: function (data) {
                 if(data.code == 0) { //成功
-
                     getMiaoshaResult($("#goodsId").val());
                 } else { //失败
                     layer.msg(data.msg);
@@ -172,7 +195,7 @@
                     } else if(result == 0) { //继续轮询
                         setTimeout(function () {
                             getMiaoshaResult(goodsId);
-                        },50);
+                        },200);
                     } else {
                         layer.confirm("恭喜你，秒杀成功!查看订单？",{btn:["确定","取消"]},
                             function () {
